@@ -25,7 +25,6 @@
          },
          addHistory: (state, action) => {
              state.history.push(action.payload);
-             //  localStorage.setItem("calcHistory", JSON.stringify(state.history));
 
          },
 

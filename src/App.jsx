@@ -8,7 +8,6 @@ function App() {
   const dispatch =useDispatch();
   const {input, history }=useSelector((state)=>state.calculator);
   const [activeKey,setActiveKey]=useState();
-  // const savedHistory = JSON.parse(localStorage.getItem("calcHistory")) || [];
   const handleClick =(value)=>{
     if (input.length >= 15) return;
     if (["+", "-", "*", "/", "=" ,"."].includes(value)){
