@@ -6,6 +6,7 @@
          input: "",
          result: "",
          history: [],
+         memory: [],
      },
      reducers: {
          setInput: (state, action) => {
