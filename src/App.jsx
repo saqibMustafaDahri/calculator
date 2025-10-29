@@ -1,9 +1,11 @@
 import React, { useEffect, useState  } from "react";
 import { useSelector,useDispatch } from "react-redux";
 import{ setInput,setResult,clearInput, clearHistory,  } from "./store/calculatorSlice";
-
+import CalcButton from "./components/CalcButton";
+import Display from "./components/Display";
+import History from "./components/History";
+import Toggle from "./components/Toggle";
 function App() {
-  
   const [showHistory , setShowHistory]=useState();
   const dispatch =useDispatch();
   const {input, history }=useSelector((state)=>state.calculator);
@@ -26,14 +28,12 @@ function App() {
       dispatch({
         type: "calculator/addHistory",
         payload: { expression: input, result: res.toString() }
-      });
-    
+      });  
   };
   const toggleHistory = () => {
     setShowHistory((prev) => !prev);
   };
   const clearH =()=> dispatch(clearHistory());
-
   useEffect(()=>{
     const handleKey =(num)=>{
       setActiveKey(num.key);
@@ -42,7 +42,6 @@ function App() {
         dispatch(setInput(input + num.key));}
         else if (["+", "-", "*", "/","=","."].includes(num.key)){
           const result =Function("return " +input)();
-
           dispatch(setResult(result.toString()));
           dispatch(setInput(result.toString() + num.key));
        }
@@ -63,50 +62,32 @@ function App() {
     window.addEventListener("keydown", handleKey);
     return()=> window.removeEventListener("keydown", handleKey);
   }, [input]);
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-black">
       <div className="bg-gray-900 rounded-2xl p-4 shadow-2xl w-[350px]"> 
-        <div className="flex items-center justify-between w-[320px]">
-        <p className="text-white text-2xl font-bold font-style: italic ">Standard</p>
-      <button onClick={toggleHistory} className={`${activeKey === "h" ? "bg-black text-white" : "bg-gray-900 hover:bg-gray-800 text-white active:bg-black" } text-2xl px-3 py-1.5 rounded-[15%] `}><i  class="fa-solid fa-clock-rotate-left"></i></button>
-      </div>
-    <div className="bg-black text-white text-right text-3xl p-4 rounded-lg mb-4 h-25 flex items-end justify-end ">{input || "0"}</div>
+      <Toggle toggleHistory={toggleHistory} activeKey={activeKey}/>
+      <Display input={input} />
         { showHistory ?(
-  <div className="bg-gray-800 text-white mt-4 p-4 rounded-lg h-92 overflow-y-auto ">
-    <div className="flex items-center justify-between">
-    <h2 className="text-xl font-bold mb-2">History</h2>
-    <button onClick={clearH}  className={`${activeKey === "Delete" ? "bg-red-700 text-white" : "bg-gray-800 hover:bg-orange-900 text-white active:bg-red-700" } text-[20px] font-semibold px-3 py-1.5 rounded-lg `}><i class="fa-solid fa-trash"></i></button>
-    </div>
-    {history.length === 0 ? (
-      <p className="text-gray-400">There's no history yet</p>
-    ) : (
-      history.map((item, index) => (
-        <div key={index} className="border-b border-gray-600 py-1">
-          <p>{item.expression} = {item.result}</p>
-        </div>
-      ))
-    )}
-  </div>
-  ):( 
+  <History history={history} clearH={clearH} activeKey={activeKey}/>
+):( 
         <div className="grid grid-cols-4 gap-3">
-          <button  onClick={() => handleClick(7)} className={`${activeKey === "7" ? "bg-blue-700 text-white" : "bg-gray-300 hover:bg-gray-400 text-gray-900 active:bg-blue-700" } text-2xl font-semibold p-4 rounded-lg`}>7 </button>
-          <button  onClick={() => handleClick(8)} className={`${activeKey === "8" ? "bg-blue-700 text-white" : "bg-gray-300 hover:bg-gray-400 text-gray-900 active:bg-blue-700" } text-2xl font-semibold p-4 rounded-lg`}>8 </button>
-          <button  onClick={() => handleClick(9)} className={`${activeKey === "9" ? "bg-blue-700 text-white" : "bg-gray-300 hover:bg-gray-400 text-gray-900 active:bg-blue-700" } text-2xl font-semibold p-4 rounded-lg`}>9 </button>
-          <button onClick={() => handleClick("/")} className={`${activeKey === "/" ? "bg-blue-700 text-white" : "bg-gray-300 hover:bg-gray-400 text-gray-900 active:bg-blue-700" } text-2xl font-semibold p-4 rounded-lg`}>/</button>
-          <button  onClick={() => handleClick(4)} className={`${activeKey === "4" ? "bg-blue-700 text-white" : "bg-gray-300 hover:bg-gray-400 text-gray-900 active:bg-blue-700" } text-2xl font-semibold p-4 rounded-lg`}>4 </button>
-          <button  onClick={() => handleClick(5)} className={`${activeKey === "5" ? "bg-blue-700 text-white" : "bg-gray-300 hover:bg-gray-400 text-gray-900 active:bg-blue-700" } text-2xl font-semibold p-4 rounded-lg`}>5 </button>
-          <button  onClick={() => handleClick(6)} className={`${activeKey === "6" ? "bg-blue-700 text-white" : "bg-gray-300 hover:bg-gray-400 text-gray-900 active:bg-blue-700" } text-2xl font-semibold p-4 rounded-lg`}>6 </button>
-          <button onClick={() => handleClick("*")} className={`${activeKey === "*" ? "bg-blue-700 text-white" : "bg-gray-300 hover:bg-gray-400 text-gray-900 active:bg-blue-700" } text-2xl font-semibold p-4 rounded-lg`}>*</button>
-          <button  onClick={() => handleClick(1)} className={`${activeKey === "1" ? "bg-blue-700 text-white" : "bg-gray-300 hover:bg-gray-400 text-gray-900 active:bg-blue-700" } text-2xl font-semibold p-4 rounded-lg`}>1 </button>
-          <button  onClick={() => handleClick(2)} className={`${activeKey === "2" ? "bg-blue-700 text-white" : "bg-gray-300 hover:bg-gray-400 text-gray-900 active:bg-blue-700" } text-2xl font-semibold p-4 rounded-lg`}>2 </button>
-          <button  onClick={() => handleClick(3)} className={`${activeKey === "3" ? "bg-blue-700 text-white" : "bg-gray-300 hover:bg-gray-400 text-gray-900 active:bg-blue-700" } text-2xl font-semibold p-4 rounded-lg`}>3 </button>
-          <button onClick={() => handleClick("-")} className={`${activeKey === "-" ? "bg-blue-700 text-white" : "bg-gray-300 hover:bg-gray-400 text-gray-900 active:bg-blue-700" } text-2xl font-semibold p-4 rounded-lg`}>-</button>
-          <button onClick={() => handleClick("0")} className={`${activeKey === "0" ? "bg-blue-700 text-white" : "bg-gray-300 hover:bg-gray-400 text-gray-900 active:bg-blue-700" } text-2xl font-semibold p-4 rounded-lg`}>0</button>
-          <button onClick={() => handleClick(".")} className={`${activeKey === "." ? "bg-blue-700 text-white" : "bg-gray-300 hover:bg-gray-400 text-gray-900 active:bg-blue-700" } text-2xl font-semibold p-4 rounded-lg`}>.</button>
-          <button onClick={calculate} className={`${activeKey === "Enter" ? "bg-blue-700 text-white" : "bg-blue-500 hover:bg-blue-600 text-white active:bg-blue-700" } text-2xl font-semibold p-4 rounded-lg`}>=</button>
-          <button onClick={() => handleClick("+")} className={`${activeKey === "+" ? "bg-blue-700 text-white" : "bg-gray-300 hover:bg-gray-400 text-gray-900 active:bg-blue-700" } text-2xl font-semibold p-4 rounded-lg`}>+</button>
-          <button onClick={clear} className={`${activeKey === "Backspace" ? "bg-blue-700 text-white" : "bg-red-600 hover:bg-red-800 text-white active:bg-blue-700" } text-2xl font-semibold p-4 rounded-lg`}>C</button>
+          <CalcButton label="7" onClick={handleClick}  keyValue="7"/>
+          <CalcButton label="8" onClick={handleClick}  keyValue="8"/>
+          <CalcButton label="9" onClick={handleClick}  keyValue="9"/>
+          <CalcButton label="/" onClick={handleClick}  keyValue="/"/>
+          <CalcButton label="4" onClick={handleClick}  keyValue="4"/>
+          <CalcButton label="5" onClick={handleClick}  keyValue="5"/>
+          <CalcButton label="6" onClick={handleClick}  keyValue="6"/>
+          <CalcButton label="*" onClick={handleClick}  keyValue="*"/>
+          <CalcButton label="1" onClick={handleClick}  keyValue="1"/>
+          <CalcButton label="2" onClick={handleClick}  keyValue="2"/>
+          <CalcButton label="3" onClick={handleClick}  keyValue="3"/>
+          <CalcButton label="-" onClick={handleClick}  keyValue="-"/>
+          <CalcButton label="0" onClick={handleClick}  keyValue="0"/>
+          <CalcButton label="." onClick={handleClick}  keyValue="."/>
+          <CalcButton label="=" onClick={calculate}  keyValue="Enter" color="blue"/>
+          <CalcButton label="+" onClick={handleClick}  keyValue="+"/>
+          <CalcButton label="c" onClick={clear}  keyValue="Backspace" color="red"/>
         </div>
        )}    
    
@@ -115,5 +96,4 @@ function App() {
     
   );
 }
-
 export default App; 
